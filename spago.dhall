@@ -2,6 +2,7 @@
 , dependencies =
   [ "arrays"
   , "either"
+  , "enums"
   , "exists"
   , "foldable-traversable"
   , "maybe"
