@@ -3,7 +3,6 @@ module Text.Parsing.PEG.Expression where
 import Prelude
 
 import Data.Either (Either(..))
-import Data.Foldable (foldr)
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints as String
 import Data.Symbol (class IsSymbol)
@@ -11,7 +10,7 @@ import Prim.Row (class Cons)
 import Text.Parsing.PEG.Cache (Cache)
 import Text.Parsing.PEG.Cache as Cache
 import Text.Parsing.PEG.Types (Position)
-import Type.Proxy (Proxy(..))
+import Type.Proxy (Proxy)
 
 
 -- | The input state of an expression.
