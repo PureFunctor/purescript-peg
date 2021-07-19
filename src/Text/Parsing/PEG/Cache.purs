@@ -49,7 +49,6 @@ type Entry e =
 -- | static guarantees.
 newtype Cache_ r = Cache_ (HashMap Key (Entry r))
 
-
 -- | A mapping of tagged keys to tagged entries. The type parameter `t`
 -- | declares a row of symbol tags and types consumed by operations on
 -- | the cache.
@@ -63,6 +62,9 @@ newtype Cache_ r = Cache_ (HashMap Key (Entry r))
 -- | ```
 newtype Cache ∷ Row Type → Type
 newtype Cache t = Cache (Exists Cache_)
+
+instance Show (Cache t) where
+  show _ = "Cache {...}"
 
 
 -- | An empty cache.
