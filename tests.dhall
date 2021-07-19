@@ -1,0 +1,6 @@
+let conf = ./spago.dhall
+
+in      conf
+    //  { dependencies = conf.dependencies # [ "console", "effect" ]
+        , sources = conf.sources # [ "test/**/*.purs" ]
+        }
