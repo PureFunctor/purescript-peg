@@ -22,9 +22,10 @@ type Node t =
 
 
 -- | An error that occurs during parsing.
-type Error =
+type Error t =
   { position ∷ Position
   , error ∷ String
+  , node ∷ Node t
   }
 
 
@@ -36,16 +37,16 @@ type Result r t =
 
 
 newtype Expression ∷ Row Type → Type → Type
-newtype Expression t r = Expression (Node t → Either Error (Result r t))
+newtype Expression t r = Expression (Node t → Either (Error t) (Result r t))
 
 
 -- | Run an expression given a node.
-unExpression ∷ ∀ t r. Expression t r → Node t → Either Error (Result r t)
+unExpression ∷ ∀ t r. Expression t r → Node t → Either (Error t) (Result r t)
 unExpression (Expression e) = e
 
 
 -- | Run an expression given a string.
-runExpression ∷ ∀ t r. Expression t r → String → Either Error r
+runExpression ∷ ∀ t r. Expression t r → String → Either (Error t) r
 runExpression (Expression e) string =
   e { string, position: 0, cache: Cache.empty } <#> _.result
 
@@ -60,7 +61,7 @@ rule ∷
   -> Expression tags type'
 rule name (Expression e) = Expression e'
   where
-  e' ∷ Node tags → Either Error (Result type' tags)
+  e' ∷ Node tags → Either (Error tags) (Result type' tags)
   e' { position, string, cache } =
     case Cache.lookup name position cache of
       Just { entry : result, delta } →
