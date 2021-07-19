@@ -1,6 +1,7 @@
 { name = "peg"
 , dependencies =
-  [ "either"
+  [ "arrays"
+  , "either"
   , "exists"
   , "foldable-traversable"
   , "maybe"
@@ -8,6 +9,7 @@
   , "prelude"
   , "psci-support"
   , "strings"
+  , "tailrec"
   , "tuples"
   , "typelevel-prelude"
   , "unordered-collections"
