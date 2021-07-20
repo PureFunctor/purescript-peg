@@ -5,7 +5,6 @@ import Prelude
 import Control.Alternative (class Alt, class Alternative, class Plus)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
-import Data.String.CodePoints as String
 import Data.Symbol (class IsSymbol)
 import Prim.Row (class Cons)
 import Text.Parsing.PEG.Cache (Cache)
@@ -69,8 +68,8 @@ rule name (Expression e) = Expression e'
         Right { result
               , next :
                 { cache
+                , string
                 , position : position + delta
-                , string : String.drop delta string
                 }
               }
       Nothing → e { position, string, cache } <#> insertToCache
