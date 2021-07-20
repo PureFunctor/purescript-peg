@@ -47,6 +47,15 @@ anyChar = Expression anyChar'
              }
 
 
+-- | Match any digit.
+anyDigit ∷ ∀ t. Expression t Char
+anyDigit = do
+  c ← anyChar
+  if c >= '0' && c <= '9'
+    then pure c
+    else fail $ "Character " <> show c <> " is not a digit"
+
+
 -- | Match a character that satisfies a predicate.
 satisfy ∷ ∀ t. (Char → Boolean) → Expression t Char
 satisfy predicate = do
