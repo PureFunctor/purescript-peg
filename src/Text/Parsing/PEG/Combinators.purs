@@ -5,6 +5,8 @@ import Prelude
 import Control.Monad.Rec.Class (Step(..), tailRec)
 import Data.Array as Array
 import Data.Either (Either(..))
+import Data.List (List, manyRec)
+import Data.List.NonEmpty (NonEmptyList, cons')
 import Data.Maybe (Maybe(..))
 import Data.Traversable as Traversable
 import Text.Parsing.PEG (Expression(..), unExpression)
@@ -29,3 +31,13 @@ choice expressions = Expression expression
 -- | Run a sequence of expressions, collecting the results.
 sequence ∷ ∀ t r. Array (Expression t r) → Expression t (Array r)
 sequence = Traversable.sequence
+
+
+-- | Match an expression zero or more times.
+zeroOrMore ∷ ∀ t r. Expression t r → Expression t (List r)
+zeroOrMore = manyRec
+
+
+-- | Match an expression one or more times.
+oneOrMore ∷ ∀ t r. Expression t r → Expression t (NonEmptyList r)
+oneOrMore p = cons' <$> p <*> zeroOrMore p
