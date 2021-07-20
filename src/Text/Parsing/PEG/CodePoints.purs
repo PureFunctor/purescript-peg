@@ -8,6 +8,7 @@ import Data.Either (Either(..))
 import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints as String
+import Data.String.Pattern (Pattern(..))
 import Text.Parsing.PEG.Expression (Expression(..), Node, fail)
 
 
@@ -53,3 +54,23 @@ satisfy predicate = do
   if predicate character
     then pure character
     else fail $ "Could not match predicate with " <> show character
+
+
+-- | Match a literal string
+literal ∷ ∀ t. String → Expression t String
+literal pattern = Expression literal'
+  where
+  literal' node@{ position, string, cache } =
+    case String.indexOf' (Pattern pattern) position string of
+      Just position' | position == position' → do
+        Right { result : pattern
+              , next : { cache
+                       , string
+                       , position : position + String.length pattern
+                       }
+              }
+      _ →
+        Left { node
+             , position
+             , error : "Could not match '" <> show string <> "'."
+             }
