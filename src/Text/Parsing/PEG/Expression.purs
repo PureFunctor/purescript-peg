@@ -3,6 +3,7 @@ module Text.Parsing.PEG.Expression where
 import Prelude
 
 import Control.Alternative (class Alt, class Alternative, class Plus)
+import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol)
@@ -107,6 +108,9 @@ instance Bind (Expression t) where
       Expression e' → e' next
 
 
+instance Monad (Expression t)
+
+
 instance Alt (Expression t) where
   alt (Expression f) (Expression g) = Expression \node →
     case f node of
@@ -120,6 +124,13 @@ instance Plus (Expression t) where
 
 
 instance Alternative (Expression t)
+
+
+instance MonadRec (Expression t) where
+  tailRecM f a = Expression \node → tailRecM (\st → map split (unExpression (f st.state) st.node)) { state: a, node }
+    where
+    split { result: Loop state, next: node } = Loop { state, node }
+    split { result: Done b, next } = Done { result: b, next }
 
 
 fail ∷ ∀ t r. String → Expression t r
