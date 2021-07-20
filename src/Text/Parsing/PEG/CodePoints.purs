@@ -28,8 +28,8 @@ anyChar = Expression anyChar'
     case String.codePointAt position string of
       Just codepoint →
         case fromCharCode $ fromEnum codepoint of
-          Just character →
-            Right { result : character
+          Just c →
+            Right { result : c
                   , next : { cache
                            , string
                            , position : position + 1
@@ -50,10 +50,15 @@ anyChar = Expression anyChar'
 -- | Match a character that satisfies a predicate.
 satisfy ∷ ∀ t. (Char → Boolean) → Expression t Char
 satisfy predicate = do
-  character ← anyChar
-  if predicate character
-    then pure character
-    else fail $ "Could not match predicate with " <> show character
+  c ← anyChar
+  if predicate c
+    then pure c
+    else fail $ "Could not match predicate with " <> show c
+
+
+-- | Match a literal character.
+character ∷ ∀ t. Char → Expression t Char
+character c = satisfy (_ == c) <?> "Could not match character " <> show c
 
 
 -- | Match a literal string.
