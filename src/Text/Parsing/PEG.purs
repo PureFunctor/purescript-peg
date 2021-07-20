@@ -128,10 +128,14 @@ instance Alternative (Expression t)
 
 
 instance MonadRec (Expression t) where
-  tailRecM f a = Expression \node → tailRecM (\st → map split (unExpression (f st.state) st.node)) { state: a, node }
+  tailRecM f a = Expression \node → tailRecM runInner { state: a, node }
     where
-    split { result: Loop state, next: node } = Loop { state, node }
-    split { result: Done b, next } = Done { result: b, next }
+    runInner ∷ { state ∷ _, node ∷ _ } → Either _ (Step _ _)
+    runInner { state, node } = extractStep <$> unExpression (f state) node
+
+    extractStep ∷ Result (Step _ _) t → Step _ _
+    extractStep { result: Loop state, next: node } = Loop { state, node }
+    extractStep { result: Done b, next } = Done { result: b, next }
 
 
 instance Lazy (Expression t r) where
