@@ -7,7 +7,7 @@ import Data.Array as Array
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Traversable as Traversable
-import Text.Parsing.PEG.Expression (Expression(..), unExpression)
+import Text.Parsing.PEG (Expression(..), unExpression)
 
 
 -- | Run expressions on ordered choice, returning the first match.

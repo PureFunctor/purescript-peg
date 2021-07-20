@@ -9,7 +9,7 @@ import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints as String
 import Data.String.Pattern (Pattern(..))
-import Text.Parsing.PEG.Expression (Expression(..), Node, fail)
+import Text.Parsing.PEG (Expression(..), Node, fail)
 
 
 -- | Modify the error message of an expression.
