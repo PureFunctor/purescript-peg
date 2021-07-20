@@ -2,12 +2,20 @@ module Text.Parsing.PEG.CodePoints where
 
 import Prelude
 
+import Control.Alternative ((<|>))
 import Data.Char (fromCharCode)
 import Data.Either (Either(..))
 import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints as String
-import Text.Parsing.PEG.Expression (Expression(..), Node)
+import Text.Parsing.PEG.Expression (Expression(..), Node, fail)
+
+
+-- | Modify the error message.
+withError ∷ ∀ t r. Expression t r → String → Expression t r
+withError expression error = expression <|> fail error
+
+infixl 3 withError as <?>
 
 
 -- | Match any character.
@@ -36,3 +44,12 @@ anyChar = Expression anyChar'
              , position
              , error : "Unexpected EOF"
              }
+
+
+-- | Match a specific character
+satisfy ∷ ∀ t. (Char → Boolean) → Expression t Char
+satisfy predicate = do
+  character ← anyChar
+  if predicate character
+    then pure character
+    else fail $ "Could not match predicate with " <> show character
