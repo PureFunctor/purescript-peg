@@ -3,6 +3,7 @@ module Text.Parsing.PEG where
 import Prelude
 
 import Control.Alternative (class Alt, class Alternative, class Plus)
+import Control.Lazy (class Lazy)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
@@ -131,6 +132,10 @@ instance MonadRec (Expression t) where
     where
     split { result: Loop state, next: node } = Loop { state, node }
     split { result: Done b, next } = Done { result: b, next }
+
+
+instance Lazy (Expression t r) where
+  defer f = Expression \node → unExpression (f unit) node
 
 
 fail ∷ ∀ t r. String → Expression t r
