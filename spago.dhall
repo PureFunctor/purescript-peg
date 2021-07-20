@@ -1,6 +1,7 @@
 { name = "peg"
 , dependencies =
   [ "arrays"
+  , "control"
   , "either"
   , "enums"
   , "exists"

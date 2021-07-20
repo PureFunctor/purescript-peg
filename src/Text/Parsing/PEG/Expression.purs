@@ -2,6 +2,7 @@ module Text.Parsing.PEG.Expression where
 
 import Prelude
 
+import Control.Alternative (class Alt, class Alternative, class Plus)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints as String
@@ -105,3 +106,22 @@ instance Bind (Expression t) where
     { result, next } ← e s
     case f result of
       Expression e' → e' next
+
+
+instance Alt (Expression t) where
+  alt (Expression f) (Expression g) = Expression \node →
+    case f node of
+      Left error | node.position == error.position → g node
+                 | otherwise → Left error
+      right → right
+
+
+instance Plus (Expression t) where
+  empty = fail "No alternative"
+
+
+instance Alternative (Expression t)
+
+
+fail ∷ ∀ t r. String → Expression t r
+fail error = Expression \node@{ position } → Left { error, position, node }
