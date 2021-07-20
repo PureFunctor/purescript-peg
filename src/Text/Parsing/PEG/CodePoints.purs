@@ -12,7 +12,7 @@ import Data.String.Pattern (Pattern(..))
 import Text.Parsing.PEG.Expression (Expression(..), Node, fail)
 
 
--- | Modify the error message.
+-- | Modify the error message of an expression.
 withError ∷ ∀ t r. Expression t r → String → Expression t r
 withError expression error = expression <|> fail error
 
@@ -47,7 +47,7 @@ anyChar = Expression anyChar'
              }
 
 
--- | Match a specific character
+-- | Match a character that satisfies a predicate.
 satisfy ∷ ∀ t. (Char → Boolean) → Expression t Char
 satisfy predicate = do
   character ← anyChar
@@ -56,7 +56,7 @@ satisfy predicate = do
     else fail $ "Could not match predicate with " <> show character
 
 
--- | Match a literal string
+-- | Match a literal string.
 literal ∷ ∀ t. String → Expression t String
 literal pattern = Expression literal'
   where

@@ -10,6 +10,7 @@ import Data.Traversable as Traversable
 import Text.Parsing.PEG.Expression (Expression(..), unExpression)
 
 
+-- | Run expressions on ordered choice, returning the first match.
 choice ∷ ∀ t r. Array (Expression t r) → Expression t r
 choice expressions = Expression expression
   where
@@ -25,5 +26,6 @@ choice expressions = Expression expression
           Done $ Left { error: "No choice found", position: baseNode.position, node: baseNode }
 
 
+-- | Run a sequence of expressions, collecting the results.
 sequence ∷ ∀ t r. Array (Expression t r) → Expression t (Array r)
 sequence = Traversable.sequence

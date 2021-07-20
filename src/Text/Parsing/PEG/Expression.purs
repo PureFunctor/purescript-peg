@@ -51,7 +51,7 @@ runExpression (Expression e) string =
   e { string, position: 0, cache: Cache.empty } <#> _.result
 
 
--- | Enables caching for an expression by turning it into a rule.
+-- | Enable caching for an expression.
 rule ∷
   ∀ name type' _tail tags
   .  IsSymbol name
