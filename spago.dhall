@@ -6,6 +6,7 @@
   , "enums"
   , "exists"
   , "foldable-traversable"
+  , "lists"
   , "maybe"
   , "newtype"
   , "prelude"
