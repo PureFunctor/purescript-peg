@@ -7,9 +7,10 @@ import Data.Char (fromCharCode)
 import Data.Either (Either(..))
 import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
+import Data.String.CodePoints (CodePoint)
 import Data.String.CodePoints as String
 import Data.String.Pattern (Pattern(..))
-import Text.Parsing.PEG (Expression(..), Node, fail)
+import Text.Parsing.PEG (Expression(..), fail)
 
 
 -- | Modify the error message of an expression.
@@ -19,32 +20,33 @@ withError expression error = expression <|> fail error
 infixl 3 withError as <?>
 
 
--- | Match any character.
-anyChar ∷ ∀ t. Expression t Char
-anyChar = Expression anyChar'
+-- | Match any code point.
+anyCodePoint ∷ ∀ t. Expression t CodePoint
+anyCodePoint = Expression anyCodePoint'
   where
-  anyChar' ∷ Node t → _
-  anyChar' node@{ position, string, cache } =
+  anyCodePoint' node@{ position, string, cache } =
     case String.codePointAt position string of
       Just codepoint →
-        case fromCharCode $ fromEnum codepoint of
-          Just c →
-            Right { result : c
-                  , next : { cache
-                           , string
-                           , position : position + 1
-                           }
-                  }
-          Nothing →
-            Left { node
-                 , position
-                 , error : "CodePoint " <> show codepoint <> " is not a character"
-                 }
+        Right { result : codepoint
+              , next : { cache
+                       , string
+                       , position : position + 1
+                       }
+              }
       Nothing →
         Left { node
              , position
              , error : "Unexpected EOF"
              }
+
+
+-- | Match any character.
+anyChar ∷ ∀ t. Expression t Char
+anyChar = do
+  codepoint ← anyCodePoint
+  case fromCharCode $ fromEnum codepoint of
+    Just c → pure c
+    Nothing → fail $ "CodePoint " <> show codepoint <> " is not a character"
 
 
 -- | Match any digit.
@@ -88,3 +90,12 @@ literal pattern = Expression literal'
              , position
              , error : "Could not match '" <> show string <> "'."
              }
+
+
+-- | Match an inclusive range of code points.
+range ∷ ∀ t. CodePoint → CodePoint → Expression t CodePoint
+range low high = do -- Expression range'
+  codepoint ← anyCodePoint
+  if low <= codepoint && codepoint <= high
+    then pure codepoint
+    else fail $ "Not in range of " <> show low <> " and " <> show high
