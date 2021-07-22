@@ -144,3 +144,10 @@ instance Lazy (Expression t r) where
 
 fail ∷ ∀ t r. String → Expression t r
 fail error = Expression \node@{ position } → Left { error, position, node }
+
+
+try ∷ ∀ t r. Expression t r → Expression t r
+try (Expression e) = Expression \node@{ position } →
+  case e node of
+    Left { error } → Left { error, position, node }
+    right → right
