@@ -10,7 +10,7 @@ import Data.Maybe (Maybe(..))
 import Data.String.CodePoints (CodePoint)
 import Data.String.CodePoints as String
 import Data.String.Pattern (Pattern(..))
-import Text.Parsing.PEG (Expression(..), fail)
+import Text.Parsing.PEG (Expression(..), fail, try)
 
 
 -- | Modify the error message of an expression.
@@ -42,7 +42,7 @@ anyCodePoint = Expression anyCodePoint'
 
 -- | Match any character.
 anyChar ∷ ∀ t. Expression t Char
-anyChar = do
+anyChar = try do
   codepoint ← anyCodePoint
   case fromCharCode $ fromEnum codepoint of
     Just c → pure c
@@ -51,7 +51,7 @@ anyChar = do
 
 -- | Match any digit.
 anyDigit ∷ ∀ t. Expression t Char
-anyDigit = do
+anyDigit = try do
   c ← anyChar
   if c >= '0' && c <= '9'
     then pure c
@@ -60,7 +60,7 @@ anyDigit = do
 
 -- | Match a character that satisfies a predicate.
 satisfy ∷ ∀ t. (Char → Boolean) → Expression t Char
-satisfy predicate = do
+satisfy predicate = try do
   c ← anyChar
   if predicate c
     then pure c
@@ -94,7 +94,7 @@ literal pattern = Expression literal'
 
 -- | Match an inclusive range of code points.
 range ∷ ∀ t. CodePoint → CodePoint → Expression t CodePoint
-range low high = do -- Expression range'
+range low high = try do -- Expression range'
   codepoint ← anyCodePoint
   if low <= codepoint && codepoint <= high
     then pure codepoint
