@@ -142,10 +142,12 @@ instance Lazy (Expression t r) where
   defer f = Expression \node → unExpression (f unit) node
 
 
+-- | Create a failing expression given an error message.
 fail ∷ ∀ t r. String → Expression t r
 fail error = Expression \node@{ position } → Left { error, position, node }
 
 
+-- | Enable backtracking for an expression on failure.
 try ∷ ∀ t r. Expression t r → Expression t r
 try (Expression e) = Expression \node@{ position } →
   case e node of
