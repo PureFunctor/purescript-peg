@@ -2,7 +2,6 @@ module Text.Parsing.PEG.CodePoints where
 
 import Prelude
 
-import Control.Alternative ((<|>))
 import Data.Char (fromCharCode)
 import Data.Either (Either(..))
 import Data.Enum (fromEnum)
@@ -10,14 +9,7 @@ import Data.Maybe (Maybe(..))
 import Data.String.CodePoints (CodePoint)
 import Data.String.CodePoints as String
 import Data.String.Pattern (Pattern(..))
-import Text.Parsing.PEG (Expression(..), fail, try)
-
-
--- | Modify the error message of an expression.
-withError ∷ ∀ t r. Expression t r → String → Expression t r
-withError expression error = expression <|> fail error
-
-infixl 3 withError as <?>
+import Text.Parsing.PEG (Expression(..), fail, try, (<?>))
 
 
 -- | Match any code point.

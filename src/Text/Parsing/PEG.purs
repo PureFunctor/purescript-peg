@@ -2,7 +2,7 @@ module Text.Parsing.PEG where
 
 import Prelude
 
-import Control.Alternative (class Alt, class Alternative, class Plus)
+import Control.Alternative (class Alt, class Alternative, class Plus, (<|>))
 import Control.Lazy (class Lazy)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Data.Either (Either(..))
@@ -151,3 +151,10 @@ try (Expression e) = Expression \node@{ position } →
   case e node of
     Left { error } → Left { error, position, node }
     right → right
+
+
+-- | Modify the error message of an expression.
+withError ∷ ∀ t r. Expression t r → String → Expression t r
+withError expression error = expression <|> fail error
+
+infixl 3 withError as <?>
