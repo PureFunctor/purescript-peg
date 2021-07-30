@@ -5,11 +5,23 @@ import Prelude
 import Data.Char (fromCharCode)
 import Data.Either (Either(..))
 import Data.Enum (fromEnum)
+import Data.List (manyRec)
 import Data.Maybe (Maybe(..))
 import Data.String.CodePoints (CodePoint)
 import Data.String.CodePoints as String
+import Data.String.CodeUnits as SCU
 import Data.String.Pattern (Pattern(..))
+import Data.Traversable (foldMap)
 import Text.Parsing.PEG (Expression(..), fail, try, (<?>))
+
+
+-- | Match the end-of-file.
+eof ∷ ∀ t. Expression t Unit
+eof = Expression eof'
+  where
+  eof' node@{ position, string }
+    | position < String.length string = Left { node, position, error : "Expected EOF" }
+    | otherwise = Right { result: unit, next: node }
 
 
 -- | Match any code point.
@@ -91,3 +103,10 @@ range low high = try do -- Expression range'
   if low <= codepoint && codepoint <= high
     then pure codepoint
     else fail $ "Not in range of " <> show low <> " and " <> show high
+
+
+-- | Match many whitespace characters.
+whiteSpace ∷ ∀ t. Expression t String
+whiteSpace = do
+  ws ← manyRec (satisfy (\c → c == ' ' || c == '\t' || c == '\n' || c == '\r'))
+  pure (foldMap SCU.singleton ws)
